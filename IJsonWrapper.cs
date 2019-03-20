@@ -29,7 +29,8 @@ namespace LitJson
         Long,
         ULong,
         Double,
-        Boolean
+        Boolean,
+        Float
     }
 
     public interface IJsonWrapper : IList, IOrderedDictionary
@@ -43,9 +44,11 @@ namespace LitJson
         bool IsULong   { get; }
         bool IsObject  { get; }
         bool IsString  { get; }
+        bool IsFloat  { get; }
 
         bool     GetBoolean ();
         double   GetDouble ();
+        float GetFloat();
         int      GetInt ();
 
         uint    GetUInt();
@@ -55,16 +58,20 @@ namespace LitJson
         
         string   GetString ();
 
+        
+
         void SetBoolean  (bool val);
         void SetDouble   (double val);
+        void SetFloat(float val);
         void SetInt      (int val);
 
         void SetUInt     (uint val);
         void SetJsonType (JsonType type);
         void SetLong     (long val);
 
-        void SetULong(ulong val);
+        void SetULong    (ulong val);
         void SetString   (string val);
+
 
         string ToJson ();
         void   ToJson (JsonWriter writer);

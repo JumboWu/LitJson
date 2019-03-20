@@ -25,6 +25,7 @@ namespace LitJson
         private IList<JsonData> inst_array;
         private bool inst_boolean;
         private double inst_double;
+        private float inst_float;
         private int inst_int;
         private uint inst_uint;
         private long inst_long;
@@ -33,6 +34,8 @@ namespace LitJson
         private string inst_string;
         private string json;
         private JsonType type;
+
+ 
 
         // Used to implement the IOrderedDictionary interface
         private IList<KeyValuePair<string, JsonData>> object_list;
@@ -89,6 +92,10 @@ namespace LitJson
             get { return type == JsonType.String; }
         }
 
+        public bool IsFloat
+        {
+            get { return type == JsonType.Float; }
+        }
         public IDictionary<String, JsonData> Inst_Object
         {
             get
@@ -227,6 +234,11 @@ namespace LitJson
         bool IJsonWrapper.IsString
         {
             get { return IsString; }
+        }
+
+        bool IJsonWrapper.IsFloat
+        {
+            get { return IsFloat; }
         }
         #endregion
 
@@ -417,6 +429,12 @@ namespace LitJson
             inst_long = number;
         }
 
+        public JsonData(float number)
+        {
+            type = JsonType.Float;
+            inst_float = number;
+        }
+
         public JsonData(object obj)
         {
             if (obj is Boolean)
@@ -489,6 +507,12 @@ namespace LitJson
                 return;
             }
 
+            if (obj is float)
+            {
+                type = JsonType.Float;
+                inst_float = (float)obj;
+            }
+
             throw new ArgumentException(
                 "Unable to wrap the given object with JsonData");
         }
@@ -526,6 +550,12 @@ namespace LitJson
         {
             return new JsonData(data);
         }
+
+        public static implicit operator JsonData(Single data)
+        {
+            return new JsonData(data);
+        }
+
         #endregion
 
 
@@ -573,6 +603,15 @@ namespace LitJson
                     "Instance of JsonData doesn't hold a string");
 
             return data.inst_string;
+        }
+
+        public static explicit operator Single(JsonData data)
+        {
+            if (data.type != JsonType.Float)
+                throw new InvalidCastException(
+                    "Instance of JsonData doesn't hold a string");
+
+            return data.inst_float;
         }
         #endregion
 
@@ -661,6 +700,15 @@ namespace LitJson
             return inst_double;
         }
 
+        float IJsonWrapper.GetFloat()
+        {
+            if (type != JsonType.Float)
+                throw new InvalidOperationException(
+                    "JsonData instance doesn't hold a double");
+
+            return inst_float;
+        }
+
         int IJsonWrapper.GetInt()
         {
             if (type != JsonType.Int)
@@ -719,6 +767,13 @@ namespace LitJson
             json = null;
         }
 
+        void IJsonWrapper.SetFloat(float val)
+        {
+            type = JsonType.Float;
+            inst_float = val;
+            json = null;
+        }
+
         void IJsonWrapper.SetInt(int val)
         {
             type = JsonType.Int;
@@ -753,6 +808,7 @@ namespace LitJson
             inst_string = val;
             json = null;
         }
+
 
         string IJsonWrapper.ToJson()
         {
@@ -909,15 +965,15 @@ namespace LitJson
                 return;
             }
 
-            if (obj.IsDouble)
+            if (obj.IsFloat)
             {
-                writer.Write(obj.GetDouble());
+                writer.Write(obj.GetFloat());
                 return;
             }
 
-            if (obj.IsUInt)
+            if (obj.IsDouble)
             {
-                writer.Write(obj.GetUInt());
+                writer.Write(obj.GetDouble());
                 return;
             }
 
@@ -927,15 +983,21 @@ namespace LitJson
                 return;
             }
 
-            if (obj.IsULong)
+            if (obj.IsUInt)
             {
-                writer.Write(obj.GetULong());
+                writer.Write(obj.GetUInt());
                 return;
             }
 
             if (obj.IsLong)
             {
                 writer.Write(obj.GetLong());
+                return;
+            }
+
+            if (obj.IsULong)
+            {
+                writer.Write(obj.GetULong());
                 return;
             }
 
@@ -1027,6 +1089,9 @@ namespace LitJson
                 case JsonType.Double:
                     return this.inst_double.Equals(x.inst_double);
 
+                case JsonType.Float:
+                    return this.inst_float.Equals(x.inst_float);
+
                 case JsonType.Boolean:
                     return this.inst_boolean.Equals(x.inst_boolean);
             }
@@ -1082,6 +1147,10 @@ namespace LitJson
                     inst_double = default(Double);
                     break;
 
+                case JsonType.Float:
+                    inst_float = default(Single);
+                    break;
+
                 case JsonType.Boolean:
                     inst_boolean = default(Boolean);
                     break;
@@ -1134,6 +1203,8 @@ namespace LitJson
 
                 case JsonType.Boolean:
                     return inst_boolean.ToString();
+                case JsonType.Float:
+                    return inst_float.ToString();
 
                 case JsonType.Double:
                     return inst_double.ToString();
@@ -1174,6 +1245,8 @@ namespace LitJson
         {
             return ((IDictionary)this).Contains(key);
         }
+
+ 
     }
 
 

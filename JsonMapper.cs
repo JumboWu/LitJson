@@ -352,7 +352,8 @@ namespace LitJson
                 return null;
             }
 
-            if (reader.Token == JsonToken.Double ||
+            if (reader.Token == JsonToken.Float ||
+                reader.Token == JsonToken.Double ||
                 reader.Token == JsonToken.Int ||
                 reader.Token == JsonToken.UInt ||
                 reader.Token == JsonToken.Long ||
@@ -534,6 +535,12 @@ namespace LitJson
             if (reader.Token == JsonToken.String)
             {
                 instance.SetString((string)reader.Value);
+                return instance;
+            }
+
+            if (reader.Token == JsonToken.Float)
+            {
+                instance.SetFloat((float)reader.Value);
                 return instance;
             }
 
@@ -726,6 +733,13 @@ namespace LitJson
             RegisterImporter(base_importers_table, typeof(int),
                               typeof(double), importer);
 
+            importer = delegate (object input)
+            {
+                return Convert.ToSingle((float)input);
+            };
+            RegisterImporter(base_importers_table, typeof(float),
+                                    typeof(double), importer);
+
             importer = delegate(object input)
             {
                 return Convert.ToDecimal((double)input);
@@ -798,15 +812,21 @@ namespace LitJson
                 return;
             }
 
+            if (obj is Single)
+            {
+                writer.Write((float)obj);
+                return;
+            }
+
             if (obj is Double)
             {
                 writer.Write((double)obj);
                 return;
             }
 
-            if (obj is Single)
+            if(obj is UInt32)
             {
-                writer.Write((double)(float)obj);
+                writer.Write((UInt32)obj);
                 return;
             }
 
@@ -819,6 +839,12 @@ namespace LitJson
             if (obj is Boolean)
             {
                 writer.Write((bool)obj);
+                return;
+            }
+
+            if (obj is UInt64)
+            {
+                writer.Write((UInt64)obj);
                 return;
             }
 

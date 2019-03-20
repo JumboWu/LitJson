@@ -33,6 +33,7 @@ namespace LitJson
         UInt,
         Long,
         ULong,
+        Float,
         Double,
 
         String,
@@ -265,7 +266,20 @@ namespace LitJson
                 number.IndexOf('e') != -1 ||
                 number.IndexOf('E') != -1)
             {
+                float n_float;
+                if (Single.TryParse(number, out n_float))
+                {
+                    token = JsonToken.Float;
+                    token_value = n_float;
 
+                    return;
+                }
+            }
+
+            if (number.IndexOf('.') != -1 ||
+                number.IndexOf('e') != -1 ||
+                number.IndexOf('E') != -1)
+            {
                 double n_double;
                 if (Double.TryParse(number, out n_double))
                 {
@@ -276,6 +290,15 @@ namespace LitJson
                 }
             }
 
+            int n_int32;
+            if (Int32.TryParse(number, out n_int32))
+            {
+                token = JsonToken.Int;
+                token_value = n_int32;
+
+                return;
+            }
+
             uint n_uint32;
             if (UInt32.TryParse(number, out n_uint32))
             {
@@ -284,11 +307,12 @@ namespace LitJson
                 return;
             }
 
-            int n_int32;
-            if (Int32.TryParse(number, out n_int32))
+
+            long n_int64;
+            if (Int64.TryParse(number, out n_int64))
             {
-                token = JsonToken.Int;
-                token_value = n_int32;
+                token = JsonToken.Long;
+                token_value = n_int64;
 
                 return;
             }
@@ -301,14 +325,7 @@ namespace LitJson
                 return;
             }
 
-            long n_int64;
-            if (Int64.TryParse(number, out n_int64))
-            {
-                token = JsonToken.Long;
-                token_value = n_int64;
-
-                return;
-            }
+            
 
             // Shouldn't happen, but just in case, return something
             token = JsonToken.Int;
