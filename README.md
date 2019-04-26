@@ -1,2 +1,2 @@
 # LitJson
-Add uint32 and uint64 support for unity
+Add uint32 uint64 float support for unity
